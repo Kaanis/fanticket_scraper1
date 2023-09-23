@@ -11,20 +11,18 @@ require "dotenv/load"
 require "raven/base"
 
 def main
-  $host = "https://www.eventimsports.de/"
+  $host = "https://www.fansale.it/"
   logger_level = ENV["LOGGER_LEVEL"] || :info
   $logger = Logger.new(STDOUT, level: logger_level)
-  base_url = "https://api.eventim.com/seatmap/api/availability/TIXX/1001"
+  base_url = "https://www.fansale.it/fansale/tickets/pop-amp-rock/blink-182/458341"
 
   while true do
     begin
       Raven.capture do
-        $logger.info "Starting a new scraping run"
-        doc = Nokogiri::HTML(open("#{$host}/ols/fcstpauli/de/hs/channel/shop/index/"))
+        $logger.info "Starting a new scraping run for Blink 182 tickets"
+        doc = Nokogiri::HTML(open(base_url))
         create_matches(doc)
-        matches = Match.all
-        url = "#{base_url}/"
-        binding.pry
+        matches = Match.where(opponent: "Blink 182")
         create_tickets(matches)
       end
     rescue => e
@@ -33,6 +31,7 @@ def main
       sleep 10
     end
   end
+end
 end
 
 def create_matches(doc)
